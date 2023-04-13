@@ -1,5 +1,10 @@
 pipeline {
-    agent  any
+    agent {
+    docker {
+      image 'devopsjourney1/myjenkinsagents:python'
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+    }
+  }
     
     environment{
         DOCKERHUB_USERNAME = "zeemlinux"
