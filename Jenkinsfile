@@ -3,11 +3,11 @@ pipeline {
     
     environment{
         DOCKERHUB_USERNAME = "zeemlinux"
-        APP_NAME = "gitops-argocd-app"
+        APP_NAME = "gitops_argocd_CI"
         IMAGE_TAG = "${BUILD_NUMBER}"
         IMAGE_NAME = "${DOCKERHUB_USERNAME}" + "/" + "${APP_NAME}"
-        REGISTRY_CREDS = 'dockerhub'
-        SONAR_LOGIN = credentials('sonar')
+        REGISTRY_CREDS = 'dockertoken'
+        SONAR_LOGIN = credentials('sonartoken')
     }
     stages {
         stage('Clean Workspace') {
@@ -23,7 +23,7 @@ pipeline {
                 script{
                     sh 'rm trufflesecurity/trufflehog:latest || true'
 		     //       sh 'docker pull trufflesecurity/trufflehog:latest'
-                    sh 'docker run -t -v "$PWD:/pwd" ghcr.io/trufflesecurity/trufflehog:latest github --repo https://github.com/zeemshomelab/gitops_argocd_project.git --debug > trufflehog'
+                    sh 'docker run -t -v "$PWD:/pwd" ghcr.io/trufflesecurity/trufflehog:latest github --repo https://github.com/zeemshomelab/gitopsCI.git --debug > trufflehog'
 		            sh 'cat trufflehog'
 
                 }
@@ -34,7 +34,7 @@ pipeline {
             steps{
                 script{
                     git credentialsId: 'github-token',
-                    url: 'https://github.com/zeemshomelab/gitops_argocd_project.git',
+                    url: 'https://github.com/zeemshomelab/gitopsCI.git',
                     branch: 'main'
                 }
             }
@@ -114,7 +114,7 @@ pipeline {
                 script{
                     sh 'rm nikto-output.xml || true'
 			        sh 'docker pull secfigo/nikto:latest'
-			        sh 'docker run --user $(id -u):$(id -g) --rm -v $(pwd):/report -i secfigo/nikto:latest -h https://jenkins.zeemshomelab.com -output /report/nikto-output.xml'
+			        sh 'docker run --user $(id -u):$(id -g) --rm -v $(pwd):/report -i secfigo/nikto:latest -h https://jenkins.local.zeemshomelab.com -output /report/nikto-output.xml'
 			        sh 'cat nikto-output.xml'
                 }
             }
@@ -123,7 +123,7 @@ pipeline {
 		  
 		    	steps {
                     script{
-                       sh 'docker run -t owasp/zap2docker-stable zap-baseline.py -t https://jenkins.zeemshomelab.com || true'
+                       sh 'docker run -t owasp/zap2docker-stable zap-baseline.py -t https://jenkins.local.zeemshomelab.com || true'
                     }
 			    }
 			}    
@@ -138,7 +138,7 @@ pipeline {
                     """
                     withCredentials([gitUsernamePassword(credentialsId: 'github-token', gitToolName: 'Default')]) {
 
-                     sh "git push https://github.com/zeemshomelab/gitops_argocd_project.git main"
+                     sh "git push https://github.com/zeemshomelab/gitopsCI.git main"
 
                    }
                    
