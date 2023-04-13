@@ -48,7 +48,7 @@ pipeline {
             steps{
                 script{
                     
-                    docker_image = docker.build "${IMAGE_NAME}"
+                    docker_image = docker.build "gitops_argocd"
                 }
             }
         }
