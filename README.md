@@ -1,2 +1,1 @@
-# gitopsCI
- gitopsCI
+# gitops_argocd_project
