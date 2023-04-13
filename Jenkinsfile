@@ -23,18 +23,18 @@ pipeline {
                 }
             }
         }
-        // stage ('Check-Git-Secrets') {
-		//     steps {
-        //         script{
-        //             // sh 'rm trufflesecurity/trufflehog:latest || true'
-		//      //       sh 'docker pull trufflesecurity/trufflehog:latest'
-        //             sh 'docker run -t -v "$PWD:/pwd" ghcr.io/trufflesecurity/trufflehog:latest github --repo https://github.com/zeemshomelab/gitopsCI.git --debug > trufflehog'
-		//             sh 'cat trufflehog'
+        stage ('Check-Git-Secrets') {
+		    steps {
+                script{
+                    sh 'rm trufflesecurity/trufflehog:latest || true'
+		     //       sh 'docker pull trufflesecurity/trufflehog:latest'
+                    sh 'docker run -t -v "$PWD:/pwd" ghcr.io/trufflesecurity/trufflehog:latest github --repo https://github.com/zeemshomelab/gitopsCI.git --debug > trufflehog'
+		            sh 'cat trufflehog'
 
-        //         }
+                }
 	         
-	    //    }
-        // } 
+	       }
+        } 
         stage(' Checkout Code From SCM'){
             steps{
                 script{
@@ -48,7 +48,7 @@ pipeline {
             steps{
                 script{
                     
-                    docker_image = docker.build "gitops_argocd"
+                    docker_image = docker.build "${IMAGE_NAME}"
                 }
             }
         }
@@ -119,7 +119,7 @@ pipeline {
                 script{
                     sh 'rm nikto-output.xml || true'
 			        sh 'docker pull secfigo/nikto:latest'
-			        sh 'docker run --user $(id -u):$(id -g) --rm -v $(pwd):/report -i secfigo/nikto:latest -h https://pve.local.zeemshomelab.com -output /report/nikto-output.xml'
+			        sh 'docker run --user $(id -u):$(id -g) --rm -v $(pwd):/report -i secfigo/nikto:latest -h https://jenkins.local.zeemshomelab.com -output /report/nikto-output.xml'
 			        sh 'cat nikto-output.xml'
                 }
             }
@@ -128,7 +128,7 @@ pipeline {
 		  
 		    	steps {
                     script{
-                       sh 'docker run -t owasp/zap2docker-stable zap-baseline.py -t https://pve.local.zeemshomelab.com || true'
+                       sh 'docker run -t owasp/zap2docker-stable zap-baseline.py -t https://jenkins.local.zeemshomelab.com || true'
                     }
 			    }
 			}    
