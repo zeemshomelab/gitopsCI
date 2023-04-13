@@ -38,7 +38,7 @@ pipeline {
         stage(' Checkout Code From SCM'){
             steps{
                 script{
-                    git credentialsId: 'github-token',
+                    git credentialsId: 'githubtoken',
                     url: 'https://github.com/zeemshomelab/gitopsCI.git',
                     branch: 'main'
                 }
@@ -141,7 +141,7 @@ pipeline {
                      git add deployment.yml
                      git commit -m "updated deployment.yml file"
                     """
-                    withCredentials([gitUsernamePassword(credentialsId: 'github-token', gitToolName: 'Default')]) {
+                    withCredentials([gitUsernamePassword(credentialsId: 'githubtoken', gitToolName: 'Default')]) {
 
                      sh "git push https://github.com/zeemshomelab/gitopsCI.git main"
 
